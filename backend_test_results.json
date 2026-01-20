@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-01-20T17:53:37.180697",
+  "total_tests": 9,
+  "passed_tests": 9,
+  "success_rate": 100.0,
+  "test_details": [
+    {
+      "test": "API Root",
+      "success": true,
+      "details": "Status: 200, Message: Nepal Election Simulation API"
+    },
+    {
+      "test": "GET Candidates",
+      "success": true,
+      "details": "Status: 200, Found 5 candidates with all expected names"
+    },
+    {
+      "test": "GET Single Candidate",
+      "success": true,
+      "details": "Status: 200, All required fields present for Balen Shah"
+    },
+    {
+      "test": "Cast Vote",
+      "success": true,
+      "details": "Status: 200, Vote cast successfully: Vote cast successfully!"
+    },
+    {
+      "test": "Duplicate Vote Prevention",
+      "success": true,
+      "details": "Status: 400, Correctly prevented duplicate vote"
+    },
+    {
+      "test": "Check Vote Status",
+      "success": true,
+      "details": "Status: 200, Correctly shows voted for balen-shah"
+    },
+    {
+      "test": "GET Results",
+      "success": true,
+      "details": "Status: 200, Total votes: 1, Results for 5 candidates"
+    },
+    {
+      "test": "GET Historical Data",
+      "success": true,
+      "details": "Status: 200, Found 3 historical elections including 2017 and 2022"
+    },
+    {
+      "test": "GET Stats",
+      "success": true,
+      "details": "Status: 200, Total votes: 1, Candidates: 5, Status: active"
+    }
+  ]
+}
