@@ -14,7 +14,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Check, Vote, Sun, TreeDeciduous, Bell, Gavel, Shield, Loader2, Sparkles, Lock, CheckCircle2, Star, Zap } from "lucide-react";
+import { Check, Vote, Lock, Loader2, Sparkles, Shield, CheckCircle2, Star, Zap } from "lucide-react";
+import { getPartyIcon } from "../components/PartyIcons";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
