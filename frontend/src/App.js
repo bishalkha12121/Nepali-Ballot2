@@ -8,6 +8,8 @@ import VotingPage from "@/pages/VotingPage";
 import ResultsPage from "@/pages/ResultsPage";
 import HistoryPage from "@/pages/HistoryPage";
 import GamesPage from "@/pages/GamesPage";
+import NewsPage from "@/pages/NewsPage";
+import ConstituenciesPage from "@/pages/ConstituenciesPage";
 
 function App() {
   // Register Service Worker for PWA
@@ -35,6 +37,8 @@ function App() {
             <Route path="/results" element={<ResultsPage />} />
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/games" element={<GamesPage />} />
+            <Route path="/news" element={<NewsPage />} />
+            <Route path="/constituencies" element={<ConstituenciesPage />} />
           </Routes>
         </Layout>
         <Toaster position="top-center" richColors />
