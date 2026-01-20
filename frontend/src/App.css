@@ -1,34 +1,191 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+/* Nepal Election App Styles */
+
+.App {
+  min-height: 100vh;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+/* Hero section styles */
+.hero-section {
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+.hero-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(15, 23, 42, 0.7) 0%,
+    rgba(15, 23, 42, 0.85) 100%
+  );
 }
 
-.App-link {
-    color: #61dafb;
+/* Card hover effects */
+.candidate-card {
+  transition: all 0.3s ease;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+.candidate-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 48, 73, 0.15);
+}
+
+.candidate-card.selected {
+  border-color: #D90429;
+  box-shadow: 0 0 0 3px rgba(217, 4, 41, 0.2);
+}
+
+/* Button styles */
+.btn-primary {
+  background-color: #D90429;
+  color: white;
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 12px 32px;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: #EF233C;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  border: 2px solid #003049;
+  color: #003049;
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 12px 32px;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #003049;
+  color: white;
+}
+
+/* Stats card */
+.stat-card {
+  background: white;
+  border-left: 4px solid #D90429;
+  padding: 16px;
+  backdrop-filter: blur(8px);
+}
+
+/* Progress bar animation */
+@keyframes progress-fill {
+  from {
+    width: 0;
+  }
+}
+
+.progress-animate {
+  animation: progress-fill 1s ease-out forwards;
+}
+
+/* Nepal flag decoration */
+.nepal-flag-border {
+  position: relative;
+}
+
+.nepal-flag-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #D90429 50%, #003049 50%);
+}
+
+/* Text gradients */
+.text-gradient-nepal {
+  background: linear-gradient(135deg, #D90429 0%, #003049 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Chart container */
+.chart-container {
+  background: white;
+  border-radius: 4px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 48, 73, 0.08);
+}
+
+/* Historical card */
+.historical-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.historical-card:hover {
+  border-color: #D90429;
+  box-shadow: 0 8px 30px rgba(217, 4, 41, 0.1);
+}
+
+/* Navigation active state */
+.nav-link {
+  position: relative;
+  color: #003049;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: #D90429;
+}
+
+.nav-link.active {
+  color: #D90429;
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #D90429;
+}
+
+/* Mobile menu */
+@media (max-width: 768px) {
+  .mobile-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.95);
+    z-index: 50;
+  }
+}
+
+/* Winner badge */
+.winner-badge {
+  background: #F77F00;
+  color: white;
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 1px;
+  padding: 4px 12px;
+  font-size: 12px;
+}
+
+/* Loading spinner */
+.spinner {
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #D90429;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
