@@ -6,6 +6,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { Calendar, Users, TrendingUp, MapPin, Vote, Award, Star, Sparkles, Zap, Globe, History, Crown } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { UMLSunIcon, CongressTreeIcon, MaoistHammerIcon, RSPBellIcon } from "../components/PartyIcons";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
