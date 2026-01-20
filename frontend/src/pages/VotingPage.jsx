@@ -310,7 +310,6 @@ const VotingPage = () => {
           <div className="lg:col-span-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {candidates.map((candidate, index) => {
-                const IconComponent = partyIcons[candidate.party_symbol] || Bell;
                 const isSelected = selectedCandidate?.id === candidate.id;
                 return (
                   <motion.div
@@ -329,7 +328,7 @@ const VotingPage = () => {
                       </motion.div>
                     )}
                     <motion.div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: `${candidate.party_color}30` }} whileHover={{ rotate: 360 }} transition={{ duration: 0.5 }}>
-                      <IconComponent size={28} style={{ color: candidate.party_color }} />
+                      {getPartyIcon(candidate.party_symbol, 28, candidate.party_color)}
                     </motion.div>
                     <div className="relative mx-auto mb-4 w-24 h-24">
                       <img src={candidate.image_url} alt={candidate.name} className="w-full h-full rounded-full object-cover border-4" style={{ borderColor: isSelected ? candidate.party_color : 'rgba(255,255,255,0.1)' }} />
