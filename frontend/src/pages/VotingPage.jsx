@@ -135,7 +135,7 @@ const Footer = () => (
         </div>
       </div>
       <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-        <p className="font-inter text-gray-500 text-sm">© 2024 Nepali Ballot. Made with 💖 in Nepal</p>
+        <p className="font-inter text-gray-500 text-sm">© 2026 Nepali Ballot 🇳🇵</p>
         <div className="flex items-center gap-4">
           <motion.span className="text-2xl" animate={{ rotate: [0, 20, -20, 0] }} transition={{ duration: 2, repeat: Infinity }}>🇳🇵</motion.span>
           <span className="text-gray-600 font-inter text-xs">Entertainment Only • Not Real Election</span>

@@ -70,7 +70,7 @@ const Footer = () => (
         <div><h4 className="font-bebas text-lg text-white tracking-wider mb-4">SPONSORED</h4><div className="bg-gray-900 border border-gray-800 p-4 text-center rounded-sm"><p className="text-gray-600 text-xs">AD SPACE</p><p className="text-gray-500 font-bebas">Your Brand</p></div></div>
       </div>
       <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-        <p className="font-inter text-gray-500 text-sm">© 2024 Nepali Ballot. Made with 💖</p>
+        <p className="font-inter text-gray-500 text-sm">© 2026 Nepali Ballot 🇳🇵</p>
         <div className="flex items-center gap-4"><motion.span className="text-2xl" animate={{ rotate: [0, 20, -20, 0] }} transition={{ duration: 2, repeat: Infinity }}>🇳🇵</motion.span><span className="text-gray-600 text-xs">Entertainment Only</span></div>
       </div>
     </div>

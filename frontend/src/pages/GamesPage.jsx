@@ -42,7 +42,7 @@ const Footer = () => (
       <motion.div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#D90429]/20 to-[#48CAE4]/20 px-4 py-2 rounded-full border border-white/10 mb-4" animate={{ scale: [1, 1.02, 1] }} transition={{ duration: 2, repeat: Infinity }}>
         <Sparkles className="text-[#F77F00]" size={16} /><span className="text-white font-bebas tracking-wider text-sm">BUILT BY TWO GEN Zs 🔥</span><Zap className="text-[#48CAE4]" size={16} />
       </motion.div>
-      <p className="text-gray-500 text-sm">© 2024 Nepali Ballot • Entertainment Only 🇳🇵</p>
+      <p className="text-gray-500 text-sm">© 2026 Nepali Ballot • Entertainment Only 🇳🇵</p>
     </div>
   </footer>
 );

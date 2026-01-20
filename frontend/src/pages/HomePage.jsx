@@ -622,7 +622,7 @@ const HomePage = () => {
           {/* Copyright */}
           <div className="border-t border-gray-800 pt-8 text-center">
             <p className="font-inter text-gray-500 text-sm">
-              © 2024 Nepali Ballot Simulation. Built with ❤️ for Nepal.
+              © 2026 Nepali Ballot Simulation 🇳🇵
             </p>
             <p className="font-inter text-gray-600 text-xs mt-2">
               This is a simulation for entertainment purposes only. Not a real election platform.

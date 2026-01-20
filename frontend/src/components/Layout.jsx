@@ -174,7 +174,7 @@ const Layout = ({ children }) => {
 
             <div className="border-t border-white/20 pt-6 text-center">
               <p className="font-inter text-sm text-gray-400">
-                © 2024 Nepali Ballot Simulation. Built with ❤️ for Nepal.
+                © 2026 Nepali Ballot Simulation 🇳🇵
               </p>
               <p className="font-inter text-xs text-gray-500 mt-1">
                 This is a simulation for entertainment purposes only.
