@@ -1,9 +1,9 @@
 /**
  * Authentic Nepalese Political Party Icons
- * These are custom SVG icons representing actual party symbols
+ * Based on official Election Commission Nepal allocated symbols
  */
 
-// CPN-UML Sun Symbol
+// CPN-UML Sun Symbol (Red sun with radiating lines - like Nepal flag)
 export const UMLSunIcon = ({ size = 24, className = "" }) => (
   <svg 
     viewBox="0 0 100 100" 
@@ -12,21 +12,21 @@ export const UMLSunIcon = ({ size = 24, className = "" }) => (
     className={className}
     fill="currentColor"
   >
-    {/* Main sun circle */}
-    <circle cx="50" cy="50" r="25" fill="currentColor" />
-    {/* Sun rays */}
-    {[...Array(12)].map((_, i) => {
-      const angle = (i * 30) * Math.PI / 180;
-      const x1 = 50 + Math.cos(angle) * 30;
-      const y1 = 50 + Math.sin(angle) * 30;
-      const x2 = 50 + Math.cos(angle) * 45;
-      const y2 = 50 + Math.sin(angle) * 45;
+    {/* Central sun circle */}
+    <ellipse cx="50" cy="50" rx="18" ry="22" fill="currentColor" />
+    {/* Radiating sun rays - many thin lines like the official symbol */}
+    {[...Array(32)].map((_, i) => {
+      const angle = (i * 11.25) * Math.PI / 180;
+      const x1 = 50 + Math.cos(angle) * 26;
+      const y1 = 50 + Math.sin(angle) * 26;
+      const x2 = 50 + Math.cos(angle) * 48;
+      const y2 = 50 + Math.sin(angle) * 48;
       return (
         <line 
           key={i}
           x1={x1} y1={y1} x2={x2} y2={y2} 
           stroke="currentColor" 
-          strokeWidth="6" 
+          strokeWidth={i % 2 === 0 ? "3" : "2"} 
           strokeLinecap="round"
         />
       );
@@ -34,7 +34,7 @@ export const UMLSunIcon = ({ size = 24, className = "" }) => (
   </svg>
 );
 
-// Nepali Congress Tree Symbol
+// Nepali Congress Symbol (4 Stars in Diamond Pattern on Tree/Flag)
 export const CongressTreeIcon = ({ size = 24, className = "" }) => (
   <svg 
     viewBox="0 0 100 100" 
@@ -43,16 +43,26 @@ export const CongressTreeIcon = ({ size = 24, className = "" }) => (
     className={className}
     fill="currentColor"
   >
-    {/* Tree trunk */}
-    <rect x="44" y="60" width="12" height="30" rx="2" fill="currentColor" />
-    {/* Tree foliage - layered triangles */}
-    <polygon points="50,5 20,45 80,45" fill="currentColor" />
-    <polygon points="50,20 15,65 85,65" fill="currentColor" />
-    <polygon points="50,35 10,80 90,80" fill="currentColor" opacity="0.9" />
+    {/* Flag background stripes */}
+    <rect x="10" y="5" width="80" height="28" fill="currentColor" opacity="0.3" />
+    <rect x="10" y="33" width="80" height="34" fill="white" stroke="currentColor" strokeWidth="1" />
+    <rect x="10" y="67" width="80" height="28" fill="currentColor" opacity="0.3" />
+    
+    {/* 4 Stars in diamond pattern - the actual NC symbol */}
+    <g fill="currentColor">
+      {/* Top star */}
+      <polygon points="50,38 52,44 58,44 53,48 55,54 50,50 45,54 47,48 42,44 48,44" />
+      {/* Bottom star */}
+      <polygon points="50,56 52,62 58,62 53,66 55,72 50,68 45,72 47,66 42,62 48,62" />
+      {/* Left star */}
+      <polygon points="32,47 34,53 40,53 35,57 37,63 32,59 27,63 29,57 24,53 30,53" />
+      {/* Right star */}
+      <polygon points="68,47 70,53 76,53 71,57 73,63 68,59 63,63 65,57 60,53 66,53" />
+    </g>
   </svg>
 );
 
-// RSP Bell Symbol  
+// RSP Bell Symbol (Official Rastriya Swatantra Party Bell)
 export const RSPBellIcon = ({ size = 24, className = "" }) => (
   <svg 
     viewBox="0 0 100 100" 
@@ -61,21 +71,29 @@ export const RSPBellIcon = ({ size = 24, className = "" }) => (
     className={className}
     fill="currentColor"
   >
-    {/* Bell top */}
-    <circle cx="50" cy="15" r="6" fill="currentColor" />
-    {/* Bell body */}
+    {/* Bell top loop */}
+    <path d="M45 12 Q50 5, 55 12" stroke="currentColor" strokeWidth="4" fill="none" />
+    {/* Bell top cap */}
+    <ellipse cx="50" cy="18" rx="8" ry="5" fill="currentColor" />
+    {/* Bell body - classic temple bell shape */}
     <path 
-      d="M50 20 C50 20, 25 30, 20 60 C18 70, 20 80, 30 82 L70 82 C80 80, 82 70, 80 60 C75 30, 50 20, 50 20" 
+      d="M50 23 
+         C35 28, 25 45, 22 65 
+         Q20 75, 25 80 
+         L75 80 
+         Q80 75, 78 65 
+         C75 45, 65 28, 50 23" 
       fill="currentColor"
     />
-    {/* Bell clapper */}
-    <circle cx="50" cy="88" r="8" fill="currentColor" />
     {/* Bell rim */}
-    <ellipse cx="50" cy="82" rx="25" ry="5" fill="currentColor" />
+    <ellipse cx="50" cy="80" rx="28" ry="6" fill="currentColor" />
+    {/* Bell clapper */}
+    <line x1="50" y1="55" x2="50" y2="78" stroke="currentColor" strokeWidth="4" />
+    <circle cx="50" cy="88" r="7" fill="currentColor" />
   </svg>
 );
 
-// CPN-Maoist Centre Hammer & Sickle Symbol
+// CPN-Maoist Centre Hammer & Sickle (Classic communist symbol)
 export const MaoistHammerIcon = ({ size = 24, className = "" }) => (
   <svg 
     viewBox="0 0 100 100" 
@@ -85,18 +103,25 @@ export const MaoistHammerIcon = ({ size = 24, className = "" }) => (
     fill="currentColor"
   >
     {/* Hammer handle */}
-    <rect x="45" y="35" width="10" height="55" rx="2" fill="currentColor" transform="rotate(-45 50 50)" />
+    <rect x="44" y="40" width="12" height="50" rx="2" fill="currentColor" transform="rotate(-45 50 65)" />
     {/* Hammer head */}
-    <rect x="30" y="20" width="40" height="18" rx="3" fill="currentColor" transform="rotate(-45 50 35)" />
-    {/* Sickle blade */}
+    <rect x="25" y="25" width="35" height="16" rx="2" fill="currentColor" transform="rotate(-45 42 33)" />
+    
+    {/* Sickle blade - curved */}
     <path 
-      d="M70 25 Q90 45, 75 70 Q60 85, 40 85 L45 75 Q60 75, 70 60 Q80 45, 65 30 Z" 
+      d="M62 20 
+         C85 25, 90 50, 75 72 
+         C65 85, 45 88, 35 82
+         L40 74
+         C48 78, 60 76, 68 65
+         C78 50, 75 32, 58 28
+         Z" 
       fill="currentColor"
     />
   </svg>
 );
 
-// RPP Crown Symbol
+// RPP Crown Symbol (Rastriya Prajatantra Party - monarchist)
 export const RPPCrownIcon = ({ size = 24, className = "" }) => (
   <svg 
     viewBox="0 0 100 100" 
@@ -105,21 +130,27 @@ export const RPPCrownIcon = ({ size = 24, className = "" }) => (
     className={className}
     fill="currentColor"
   >
-    {/* Crown base */}
-    <rect x="15" y="70" width="70" height="15" rx="3" fill="currentColor" />
-    {/* Crown body with peaks */}
+    {/* Crown base band */}
+    <rect x="15" y="70" width="70" height="12" rx="2" fill="currentColor" />
+    {/* Crown body with 5 points */}
     <path 
-      d="M15 70 L20 35 L35 50 L50 25 L65 50 L80 35 L85 70 Z" 
+      d="M15 70 
+         L18 40 L30 55 
+         L40 30 L50 50 
+         L60 30 L70 55 
+         L82 40 L85 70 Z" 
       fill="currentColor"
     />
-    {/* Crown jewels */}
-    <circle cx="35" cy="55" r="5" fill="currentColor" opacity="0.5" />
-    <circle cx="50" cy="40" r="6" fill="currentColor" opacity="0.5" />
-    <circle cx="65" cy="55" r="5" fill="currentColor" opacity="0.5" />
+    {/* Crown jewels/dots */}
+    <circle cx="30" cy="58" r="4" fill="currentColor" opacity="0.4" />
+    <circle cx="50" cy="52" r="5" fill="currentColor" opacity="0.4" />
+    <circle cx="70" cy="58" r="4" fill="currentColor" opacity="0.4" />
+    {/* Top center jewel */}
+    <circle cx="50" cy="38" r="4" fill="currentColor" opacity="0.5" />
   </svg>
 );
 
-// Generic Independent/Other Symbol
+// Generic Independent/Other Symbol (Person silhouette)
 export const IndependentIcon = ({ size = 24, className = "" }) => (
   <svg 
     viewBox="0 0 100 100" 
@@ -128,10 +159,16 @@ export const IndependentIcon = ({ size = 24, className = "" }) => (
     className={className}
     fill="currentColor"
   >
-    {/* Person silhouette */}
-    <circle cx="50" cy="25" r="15" fill="currentColor" />
+    {/* Person head */}
+    <circle cx="50" cy="25" r="18" fill="currentColor" />
+    {/* Person body */}
     <path 
-      d="M50 40 C30 45, 20 60, 20 85 L40 85 L40 60 L45 85 L55 85 L60 60 L60 85 L80 85 C80 60, 70 45, 50 40" 
+      d="M50 43 
+         C30 48, 18 65, 18 90 
+         L35 90 L38 65 L45 90 
+         L55 90 L62 65 L65 90 
+         L82 90 
+         C82 65, 70 48, 50 43" 
       fill="currentColor"
     />
   </svg>
@@ -147,8 +184,11 @@ export const NepalFlagIcon = ({ size = 24, className = "" }) => (
   >
     <polygon points="0,0 40,16 0,32" fill="#D90429" />
     <polygon points="0,16 40,32 0,48" fill="#003049" />
-    <circle cx="12" cy="12" r="4" fill="white" />
-    <circle cx="12" cy="28" r="4" fill="white" />
+    {/* Moon symbol */}
+    <circle cx="12" cy="10" r="5" fill="white" />
+    <circle cx="14" cy="9" r="3" fill="#D90429" />
+    {/* Sun symbol */}
+    <circle cx="12" cy="26" r="4" fill="white" />
   </svg>
 );
 
