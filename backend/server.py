@@ -84,7 +84,7 @@ CANDIDATES_DATA = [
         "party": "Independent / RSP Alliance",
         "party_symbol": "Bell",
         "party_color": "#48CAE4",
-        "party_flag_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Logo_of_the_Rastriya_Swatantra_Party.svg/200px-Logo_of_the_Rastriya_Swatantra_Party.svg.png",
+        "party_flag_url": "/flags/rsp-logo.svg",
         "image_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
         "bio": "Engineer, rapper, and the Mayor of Kathmandu Metropolitan City since 2022. Known for his anti-corruption stance and urban development initiatives.",
         "slogan": "Build Nepal, Build Future"
@@ -95,7 +95,7 @@ CANDIDATES_DATA = [
         "party": "CPN-UML",
         "party_symbol": "Sun",
         "party_color": "#EF233C",
-        "party_flag_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/cinquanta/Flag_of_the_CPN-UML.svg/200px-Flag_of_the_CPN-UML.svg.png",
+        "party_flag_url": "/flags/cpn-uml.svg",
         "image_url": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
         "bio": "Chairman of CPN-UML and former Prime Minister of Nepal. A veteran communist leader with decades of political experience.",
         "slogan": "Prosperous Nepal, Happy Nepali"
@@ -106,7 +106,7 @@ CANDIDATES_DATA = [
         "party": "Nepali Congress",
         "party_symbol": "TreeDeciduous",
         "party_color": "#2A9D8F",
-        "party_flag_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Flag_of_Nepali_Congress.svg/200px-Flag_of_Nepali_Congress.svg.png",
+        "party_flag_url": "/flags/nepali-congress.svg",
         "image_url": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=face",
         "bio": "President of Nepali Congress and five-time Prime Minister. A key figure in Nepal's democratic movement and constitutional development.",
         "slogan": "Democracy for All"
@@ -117,7 +117,7 @@ CANDIDATES_DATA = [
         "party": "CPN-Maoist Centre",
         "party_symbol": "Hammer",
         "party_color": "#B91C1C",
-        "party_flag_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Flag_of_CPN_%28Maoist_Centre%29.svg/200px-Flag_of_CPN_%28Maoist_Centre%29.svg.png",
+        "party_flag_url": "/flags/cpn-maoist.svg",
         "image_url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop&crop=face",
         "bio": "Chairman of CPN-Maoist Centre and current Prime Minister. Former guerrilla leader who led the Maoist insurgency and joined mainstream politics.",
         "slogan": "People's Power, People's Government"
@@ -128,7 +128,7 @@ CANDIDATES_DATA = [
         "party": "Rastriya Swatantra Party (RSP)",
         "party_symbol": "Bell",
         "party_color": "#48CAE4",
-        "party_flag_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Logo_of_the_Rastriya_Swatantra_Party.svg/200px-Logo_of_the_Rastriya_Swatantra_Party.svg.png",
+        "party_flag_url": "/flags/rsp-logo.svg",
         "image_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face",
         "bio": "Founder of Rastriya Swatantra Party and former journalist. Known for his investigative journalism show 'Sidha Kura Janata Sanga'.",
         "slogan": "New Politics, New Nepal"
