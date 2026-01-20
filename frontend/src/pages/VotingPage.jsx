@@ -327,8 +327,13 @@ const VotingPage = () => {
                         <Check className="text-white" size={20} />
                       </motion.div>
                     )}
-                    <motion.div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: `${candidate.party_color}30` }} whileHover={{ rotate: 360 }} transition={{ duration: 0.5 }}>
-                      {getPartyIcon(candidate.party_symbol, 28, candidate.party_color)}
+                    {/* Party Flag */}
+                    <motion.div className="w-16 h-12 mx-auto mb-4 flex items-center justify-center" whileHover={{ scale: 1.1 }} transition={{ duration: 0.3 }}>
+                      {candidate.party_flag_url ? (
+                        <img src={candidate.party_flag_url} alt={`${candidate.party} flag`} className="max-w-full max-h-full object-contain" />
+                      ) : (
+                        getPartyIcon(candidate.party_symbol, 32, candidate.party_color)
+                      )}
                     </motion.div>
                     <div className="relative mx-auto mb-4 w-24 h-24">
                       <img src={candidate.image_url} alt={candidate.name} className="w-full h-full rounded-full object-cover border-4" style={{ borderColor: isSelected ? candidate.party_color : 'rgba(255,255,255,0.1)' }} />
