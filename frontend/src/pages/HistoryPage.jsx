@@ -250,11 +250,11 @@ const HistoryPage = () => {
               <AdBanner type="rectangle" id="history-1" />
               <div className="bg-white border border-gray-200 p-4 rounded-sm shadow-sm">
                 <h3 className="font-bebas text-lg text-peace-blue mb-3 flex items-center gap-2"><Globe className="text-rsp-blue" size={18} />MAJOR PARTIES</h3>
-                <ul className="space-y-2 text-sm text-gray-600 font-inter">
-                  <li className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-communist-red" />CPN-UML</li>
-                  <li className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-congress-green" />Nepali Congress</li>
-                  <li className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#B91C1C]" />Maoist Centre</li>
-                  <li className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-rsp-blue" />RSP (New)</li>
+                <ul className="space-y-3 text-sm text-gray-600 font-inter">
+                  <li className="flex items-center gap-3"><UMLSunIcon size={20} className="text-communist-red" /><span>CPN-UML</span></li>
+                  <li className="flex items-center gap-3"><CongressTreeIcon size={20} className="text-congress-green" /><span>Nepali Congress</span></li>
+                  <li className="flex items-center gap-3"><MaoistHammerIcon size={20} className="text-[#B91C1C]" /><span>Maoist Centre</span></li>
+                  <li className="flex items-center gap-3"><RSPBellIcon size={20} className="text-rsp-blue" /><span>RSP (New)</span></li>
                 </ul>
               </div>
               <AdBanner type="rectangle" id="history-2" />
