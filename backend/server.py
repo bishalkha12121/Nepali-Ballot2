@@ -129,48 +129,130 @@ CANDIDATES_DATA = [
     }
 ]
 
+# Nepal's 7 Provinces
+PROVINCES = [
+    {"id": "koshi", "name": "Koshi Province", "capital": "Biratnagar", "federal_seats": 28, "provincial_seats": 56},
+    {"id": "madhesh", "name": "Madhesh Province", "capital": "Janakpur", "federal_seats": 32, "provincial_seats": 64},
+    {"id": "bagmati", "name": "Bagmati Province", "capital": "Hetauda", "federal_seats": 55, "provincial_seats": 110},
+    {"id": "gandaki", "name": "Gandaki Province", "capital": "Pokhara", "federal_seats": 30, "provincial_seats": 60},
+    {"id": "lumbini", "name": "Lumbini Province", "capital": "Deukhuri", "federal_seats": 43, "provincial_seats": 87},
+    {"id": "karnali", "name": "Karnali Province", "capital": "Birendranagar", "federal_seats": 20, "provincial_seats": 40},
+    {"id": "sudurpashchim", "name": "Sudurpashchim Province", "capital": "Godawari", "federal_seats": 26, "provincial_seats": 52}
+]
+
 HISTORICAL_DATA = [
     {
-        "id": "election-2017",
+        "id": "federal-2017",
         "year": 2017,
-        "election_type": "Federal Parliament Election",
+        "election_type": "Federal Parliament Election (House of Representatives)",
+        "description": "First federal election after 2015 Constitution. Left alliance (UML + Maoist) won majority.",
         "results": [
-            {"party": "CPN-UML", "seats": 121, "vote_share": 33.2, "color": "#EF233C"},
-            {"party": "Nepali Congress", "seats": 63, "vote_share": 26.9, "color": "#2A9D8F"},
-            {"party": "Maoist Centre", "seats": 53, "vote_share": 13.7, "color": "#EF233C"},
-            {"party": "RSP", "seats": 0, "vote_share": 0, "color": "#48CAE4"},
-            {"party": "Others", "seats": 38, "vote_share": 26.2, "color": "#FFB703"}
+            {"party": "CPN-UML", "seats": 121, "vote_share": 33.2, "color": "#EF233C", "symbol": "Sun"},
+            {"party": "Nepali Congress", "seats": 63, "vote_share": 26.9, "color": "#2A9D8F", "symbol": "Tree"},
+            {"party": "CPN-Maoist Centre", "seats": 53, "vote_share": 13.7, "color": "#B91C1C", "symbol": "Hammer"},
+            {"party": "Rastriya Janata Party", "seats": 17, "vote_share": 6.1, "color": "#F59E0B", "symbol": "Chair"},
+            {"party": "Sanghiya Samajbadi Forum", "seats": 16, "vote_share": 4.2, "color": "#8B5CF6", "symbol": "Flag"},
+            {"party": "Others", "seats": 5, "vote_share": 15.9, "color": "#6B7280", "symbol": "Circle"}
         ],
+        "total_seats": 275,
         "total_voters": 15427730,
+        "votes_cast": 10413519,
+        "turnout_percentage": 67.5,
+        "by_province": [
+            {"province": "Koshi", "winner": "CPN-UML", "seats_uml": 16, "seats_congress": 5, "seats_maoist": 6, "seats_others": 1},
+            {"province": "Madhesh", "winner": "RJP/SSF", "seats_uml": 2, "seats_congress": 6, "seats_maoist": 2, "seats_others": 22},
+            {"province": "Bagmati", "winner": "CPN-UML", "seats_uml": 28, "seats_congress": 12, "seats_maoist": 10, "seats_others": 5},
+            {"province": "Gandaki", "winner": "CPN-UML", "seats_uml": 18, "seats_congress": 5, "seats_maoist": 5, "seats_others": 2},
+            {"province": "Lumbini", "winner": "CPN-UML", "seats_uml": 22, "seats_congress": 10, "seats_maoist": 8, "seats_others": 3},
+            {"province": "Karnali", "winner": "CPN-UML", "seats_uml": 11, "seats_congress": 3, "seats_maoist": 5, "seats_others": 1},
+            {"province": "Sudurpashchim", "winner": "CPN-UML", "seats_uml": 14, "seats_congress": 8, "seats_maoist": 3, "seats_others": 1}
+        ]
+    },
+    {
+        "id": "federal-2022",
+        "year": 2022,
+        "election_type": "Federal Parliament Election (House of Representatives)",
+        "description": "Second federal election. Hung parliament with no clear majority. Rise of RSP as new political force.",
+        "results": [
+            {"party": "Nepali Congress", "seats": 89, "vote_share": 26.2, "color": "#2A9D8F", "symbol": "Tree"},
+            {"party": "CPN-UML", "seats": 78, "vote_share": 24.8, "color": "#EF233C", "symbol": "Sun"},
+            {"party": "CPN-Maoist Centre", "seats": 32, "vote_share": 11.1, "color": "#B91C1C", "symbol": "Hammer"},
+            {"party": "Rastriya Swatantra Party (RSP)", "seats": 20, "vote_share": 10.5, "color": "#48CAE4", "symbol": "Bell"},
+            {"party": "Rastriya Prajatantra Party", "seats": 14, "vote_share": 5.3, "color": "#FFB703", "symbol": "Crown"},
+            {"party": "Janata Samajbadi Party", "seats": 12, "vote_share": 4.8, "color": "#8B5CF6", "symbol": "Chair"},
+            {"party": "Loktantrik Samajbadi Party", "seats": 4, "vote_share": 2.1, "color": "#10B981", "symbol": "Cycle"},
+            {"party": "Janamat Party", "seats": 6, "vote_share": 3.2, "color": "#F97316", "symbol": "Globe"},
+            {"party": "Nagarik Unmukti Party", "seats": 3, "vote_share": 1.4, "color": "#EC4899", "symbol": "Key"},
+            {"party": "Others/Independents", "seats": 17, "vote_share": 10.6, "color": "#6B7280", "symbol": "Circle"}
+        ],
+        "total_seats": 275,
+        "total_voters": 17988570,
+        "votes_cast": 10973028,
+        "turnout_percentage": 61.0,
+        "by_province": [
+            {"province": "Koshi", "winner": "CPN-UML", "seats_uml": 14, "seats_congress": 8, "seats_rsp": 2, "seats_others": 4},
+            {"province": "Madhesh", "winner": "JSP/Others", "seats_congress": 8, "seats_uml": 4, "seats_jsp": 10, "seats_others": 10},
+            {"province": "Bagmati", "winner": "Nepali Congress", "seats_congress": 22, "seats_uml": 18, "seats_rsp": 8, "seats_others": 7},
+            {"province": "Gandaki", "winner": "Nepali Congress", "seats_congress": 13, "seats_uml": 10, "seats_rsp": 4, "seats_others": 3},
+            {"province": "Lumbini", "winner": "Nepali Congress", "seats_congress": 18, "seats_uml": 14, "seats_maoist": 6, "seats_others": 5},
+            {"province": "Karnali", "winner": "Nepali Congress", "seats_congress": 9, "seats_uml": 6, "seats_maoist": 3, "seats_others": 2},
+            {"province": "Sudurpashchim", "winner": "Nepali Congress", "seats_congress": 11, "seats_uml": 8, "seats_rpp": 4, "seats_others": 3}
+        ]
+    },
+    {
+        "id": "provincial-2017",
+        "year": 2017,
+        "election_type": "Provincial Assembly Election",
+        "description": "First provincial elections held concurrently with federal elections.",
+        "results": [
+            {"party": "CPN-UML", "seats": 209, "vote_share": 32.8, "color": "#EF233C", "symbol": "Sun"},
+            {"party": "Nepali Congress", "seats": 106, "vote_share": 25.4, "color": "#2A9D8F", "symbol": "Tree"},
+            {"party": "CPN-Maoist Centre", "seats": 97, "vote_share": 13.5, "color": "#B91C1C", "symbol": "Hammer"},
+            {"party": "Rastriya Janata Party", "seats": 34, "vote_share": 6.8, "color": "#F59E0B", "symbol": "Chair"},
+            {"party": "Sanghiya Samajbadi Forum", "seats": 27, "vote_share": 4.5, "color": "#8B5CF6", "symbol": "Flag"},
+            {"party": "Others", "seats": 77, "vote_share": 17.0, "color": "#6B7280", "symbol": "Circle"}
+        ],
+        "total_seats": 550,
+        "total_voters": 15427730,
+        "votes_cast": 10413519,
         "turnout_percentage": 67.5
     },
     {
-        "id": "election-2022",
+        "id": "provincial-2022",
         "year": 2022,
-        "election_type": "Federal Parliament Election",
+        "election_type": "Provincial Assembly Election",
+        "description": "Second provincial elections. RSP emerged as a significant new force.",
         "results": [
-            {"party": "Nepali Congress", "seats": 89, "vote_share": 26.2, "color": "#2A9D8F"},
-            {"party": "CPN-UML", "seats": 78, "vote_share": 24.8, "color": "#EF233C"},
-            {"party": "Maoist Centre", "seats": 32, "vote_share": 11.1, "color": "#EF233C"},
-            {"party": "RSP", "seats": 20, "vote_share": 10.5, "color": "#48CAE4"},
-            {"party": "Others", "seats": 56, "vote_share": 27.4, "color": "#FFB703"}
+            {"party": "Nepali Congress", "seats": 151, "vote_share": 25.8, "color": "#2A9D8F", "symbol": "Tree"},
+            {"party": "CPN-UML", "seats": 138, "vote_share": 24.2, "color": "#EF233C", "symbol": "Sun"},
+            {"party": "CPN-Maoist Centre", "seats": 58, "vote_share": 10.8, "color": "#B91C1C", "symbol": "Hammer"},
+            {"party": "Rastriya Swatantra Party (RSP)", "seats": 37, "vote_share": 9.8, "color": "#48CAE4", "symbol": "Bell"},
+            {"party": "Rastriya Prajatantra Party", "seats": 25, "vote_share": 5.1, "color": "#FFB703", "symbol": "Crown"},
+            {"party": "Janata Samajbadi Party", "seats": 22, "vote_share": 4.6, "color": "#8B5CF6", "symbol": "Chair"},
+            {"party": "Others/Independents", "seats": 119, "vote_share": 19.7, "color": "#6B7280", "symbol": "Circle"}
         ],
+        "total_seats": 550,
         "total_voters": 17988570,
+        "votes_cast": 10973028,
         "turnout_percentage": 61.0
     },
     {
         "id": "local-2022",
         "year": 2022,
-        "election_type": "Local Election",
+        "election_type": "Local Level Election",
+        "description": "Local body elections for mayors, deputy mayors, ward chairs across 753 local units.",
         "results": [
-            {"party": "Nepali Congress", "seats": 332, "vote_share": 28.5, "color": "#2A9D8F"},
-            {"party": "CPN-UML", "seats": 310, "vote_share": 27.1, "color": "#EF233C"},
-            {"party": "Maoist Centre", "seats": 98, "vote_share": 12.3, "color": "#EF233C"},
-            {"party": "Independent", "seats": 85, "vote_share": 15.8, "color": "#48CAE4"},
-            {"party": "Others", "seats": 78, "vote_share": 16.3, "color": "#FFB703"}
+            {"party": "Nepali Congress", "seats": 332, "vote_share": 28.5, "color": "#2A9D8F", "symbol": "Tree"},
+            {"party": "CPN-UML", "seats": 310, "vote_share": 27.1, "color": "#EF233C", "symbol": "Sun"},
+            {"party": "CPN-Maoist Centre", "seats": 98, "vote_share": 12.3, "color": "#B91C1C", "symbol": "Hammer"},
+            {"party": "Independent", "seats": 85, "vote_share": 15.8, "color": "#48CAE4", "symbol": "Person"},
+            {"party": "Others", "seats": 78, "vote_share": 16.3, "color": "#6B7280", "symbol": "Circle"}
         ],
+        "total_seats": 903,
         "total_voters": 17733723,
-        "turnout_percentage": 65.0
+        "votes_cast": 11527121,
+        "turnout_percentage": 65.0,
+        "notable": "Balen Shah (Independent) won Kathmandu Metropolitan City Mayor with 61,767 votes, defeating NC and UML candidates."
     }
 ]
 
