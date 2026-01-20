@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140">
+  <!-- CPN-Maoist Centre Flag - Hammer and Sickle on red -->
+  <rect x="0" y="0" width="200" height="140" fill="#B91C1C"/>
+  
+  <!-- Hammer and Sickle in white -->
+  <g fill="#FFFFFF" transform="translate(100, 70)">
+    <!-- Hammer handle -->
+    <rect x="-8" y="-10" width="16" height="60" rx="2" transform="rotate(-45)"/>
+    
+    <!-- Hammer head -->
+    <rect x="-35" y="-45" width="45" height="18" rx="3" transform="rotate(-45)"/>
+    
+    <!-- Sickle blade -->
+    <path d="M15 -40 
+             C50 -35, 55 0, 40 30 
+             C30 50, 5 55, -15 48
+             L-8 38
+             C5 42, 22 38, 30 22
+             C42 0, 38 -25, 10 -32
+             Z"/>
+  </g>
+</svg>

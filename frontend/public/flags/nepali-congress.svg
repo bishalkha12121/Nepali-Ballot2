@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140">
+  <!-- Nepali Congress Flag - Red/White stripes with 4 stars -->
+  <rect x="0" y="0" width="200" height="45" fill="#DC2626"/>
+  <rect x="0" y="45" width="200" height="50" fill="#FFFFFF"/>
+  <rect x="0" y="95" width="200" height="45" fill="#DC2626"/>
+  
+  <!-- 4 Red Stars in diamond pattern on white stripe -->
+  <!-- Top star -->
+  <polygon points="100,52 103,60 112,60 105,66 108,74 100,69 92,74 95,66 88,60 97,60" fill="#DC2626"/>
+  <!-- Bottom star -->
+  <polygon points="100,76 103,84 112,84 105,90 108,98 100,93 92,98 95,90 88,84 97,84" fill="#DC2626"/>
+  <!-- Left star -->
+  <polygon points="70,64 73,72 82,72 75,78 78,86 70,81 62,86 65,78 58,72 67,72" fill="#DC2626"/>
+  <!-- Right star -->
+  <polygon points="130,64 133,72 142,72 135,78 138,86 130,81 122,86 125,78 118,72 127,72" fill="#DC2626"/>
+</svg>

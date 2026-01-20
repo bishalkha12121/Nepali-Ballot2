@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140">
+  <!-- CPN-UML Flag - Sun symbol like Nepal flag -->
+  <rect x="0" y="0" width="200" height="140" fill="#FFFFFF"/>
+  
+  <!-- Red sun with radiating rays -->
+  <g transform="translate(100, 70)">
+    <!-- Central sun ellipse -->
+    <ellipse cx="0" cy="0" rx="25" ry="30" fill="#DC2626"/>
+    
+    <!-- Radiating rays - many thin lines -->
+    <g stroke="#DC2626" stroke-width="2.5" stroke-linecap="round">
+      <line x1="0" y1="-35" x2="0" y2="-58"/>
+      <line x1="17" y1="-30" x2="28" y2="-50"/>
+      <line x1="30" y1="-17" x2="50" y2="-28"/>
+      <line x1="35" y1="0" x2="58" y2="0"/>
+      <line x1="30" y1="17" x2="50" y2="28"/>
+      <line x1="17" y1="30" x2="28" y2="50"/>
+      <line x1="0" y1="35" x2="0" y2="58"/>
+      <line x1="-17" y1="30" x2="-28" y2="50"/>
+      <line x1="-30" y1="17" x2="-50" y2="28"/>
+      <line x1="-35" y1="0" x2="-58" y2="0"/>
+      <line x1="-30" y1="-17" x2="-50" y2="-28"/>
+      <line x1="-17" y1="-30" x2="-28" y2="-50"/>
+    </g>
+    
+    <!-- Shorter rays between main rays -->
+    <g stroke="#DC2626" stroke-width="1.5" stroke-linecap="round">
+      <line x1="9" y1="-33" x2="14" y2="-52"/>
+      <line x1="24" y1="-24" x2="40" y2="-40"/>
+      <line x1="33" y1="-9" x2="54" y2="-14"/>
+      <line x1="33" y1="9" x2="54" y2="14"/>
+      <line x1="24" y1="24" x2="40" y2="40"/>
+      <line x1="9" y1="33" x2="14" y2="52"/>
+      <line x1="-9" y1="33" x2="-14" y2="52"/>
+      <line x1="-24" y1="24" x2="-40" y2="40"/>
+      <line x1="-33" y1="9" x2="-54" y2="14"/>
+      <line x1="-33" y1="-9" x2="-54" y2="-14"/>
+      <line x1="-24" y1="-24" x2="-40" y2="-40"/>
+      <line x1="-9" y1="-33" x2="-14" y2="-52"/>
+    </g>
+  </g>
+</svg>
