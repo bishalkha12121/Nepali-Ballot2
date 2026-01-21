@@ -670,6 +670,168 @@ async def add_constituency_candidate(data: dict):
     CONSTITUENCY_CANDIDATES.append(new_candidate)
     return new_candidate
 
+# ============== FOOTBALL API ENDPOINTS ==============
+
+# Football-Data.org API (free tier - 10 requests/minute)
+FOOTBALL_API_KEY = os.environ.get("FOOTBALL_API_KEY", "")
+FOOTBALL_API_BASE = "https://api.football-data.org/v4"
+
+LEAGUE_CODES = {
+    "PL": "Premier League",
+    "PD": "La Liga",
+    "BL1": "Bundesliga",
+    "SA": "Serie A",
+    "FL1": "Ligue 1",
+    "CL": "Champions League"
+}
+
+# Sample football data (fallback when API unavailable)
+SAMPLE_MATCHES = {
+    "PL": [
+        {"homeTeam": "Manchester City", "awayTeam": "Arsenal", "homeScore": 2, "awayScore": 1, "status": "FINISHED", "date": "Jan 19", "time": "FT"},
+        {"homeTeam": "Liverpool", "awayTeam": "Chelsea", "homeScore": 3, "awayScore": 0, "status": "FINISHED", "date": "Jan 18", "time": "FT"},
+        {"homeTeam": "Manchester United", "awayTeam": "Tottenham", "homeScore": None, "awayScore": None, "status": "SCHEDULED", "date": "Jan 22", "time": "20:00"},
+        {"homeTeam": "Newcastle", "awayTeam": "Brighton", "homeScore": None, "awayScore": None, "status": "SCHEDULED", "date": "Jan 23", "time": "19:30"},
+    ],
+    "PD": [
+        {"homeTeam": "Real Madrid", "awayTeam": "Barcelona", "homeScore": 2, "awayScore": 2, "status": "FINISHED", "date": "Jan 18", "time": "FT"},
+        {"homeTeam": "Atletico Madrid", "awayTeam": "Sevilla", "homeScore": 1, "awayScore": 0, "status": "FINISHED", "date": "Jan 19", "time": "FT"},
+        {"homeTeam": "Real Sociedad", "awayTeam": "Valencia", "homeScore": None, "awayScore": None, "status": "SCHEDULED", "date": "Jan 22", "time": "21:00"},
+    ],
+    "BL1": [
+        {"homeTeam": "Bayern Munich", "awayTeam": "Borussia Dortmund", "homeScore": 3, "awayScore": 2, "status": "FINISHED", "date": "Jan 17", "time": "FT"},
+        {"homeTeam": "RB Leipzig", "awayTeam": "Bayer Leverkusen", "homeScore": 1, "awayScore": 1, "status": "FINISHED", "date": "Jan 18", "time": "FT"},
+    ],
+    "SA": [
+        {"homeTeam": "Inter Milan", "awayTeam": "AC Milan", "homeScore": 2, "awayScore": 0, "status": "FINISHED", "date": "Jan 19", "time": "FT"},
+        {"homeTeam": "Juventus", "awayTeam": "Napoli", "homeScore": 1, "awayScore": 1, "status": "FINISHED", "date": "Jan 18", "time": "FT"},
+    ],
+    "FL1": [
+        {"homeTeam": "PSG", "awayTeam": "Marseille", "homeScore": 2, "awayScore": 1, "status": "FINISHED", "date": "Jan 17", "time": "FT"},
+        {"homeTeam": "Monaco", "awayTeam": "Lyon", "homeScore": 3, "awayScore": 2, "status": "FINISHED", "date": "Jan 18", "time": "FT"},
+    ],
+    "CL": [
+        {"homeTeam": "Real Madrid", "awayTeam": "Manchester City", "homeScore": 3, "awayScore": 3, "status": "FINISHED", "date": "Jan 22", "time": "FT"},
+        {"homeTeam": "Bayern Munich", "awayTeam": "Arsenal", "homeScore": None, "awayScore": None, "status": "SCHEDULED", "date": "Feb 20", "time": "21:00"},
+        {"homeTeam": "PSG", "awayTeam": "Barcelona", "homeScore": None, "awayScore": None, "status": "SCHEDULED", "date": "Feb 21", "time": "21:00"},
+    ],
+}
+
+SAMPLE_STANDINGS = {
+    "PL": [
+        {"position": 1, "team": "Liverpool", "played": 21, "won": 15, "draw": 5, "lost": 1, "points": 50},
+        {"position": 2, "team": "Arsenal", "played": 21, "won": 13, "draw": 6, "lost": 2, "points": 45},
+        {"position": 3, "team": "Nottingham Forest", "played": 21, "won": 12, "draw": 5, "lost": 4, "points": 41},
+        {"position": 4, "team": "Chelsea", "played": 21, "won": 11, "draw": 5, "lost": 5, "points": 38},
+        {"position": 5, "team": "Newcastle", "played": 21, "won": 10, "draw": 6, "lost": 5, "points": 36},
+        {"position": 6, "team": "Manchester City", "played": 21, "won": 10, "draw": 5, "lost": 6, "points": 35},
+        {"position": 7, "team": "Bournemouth", "played": 21, "won": 9, "draw": 6, "lost": 6, "points": 33},
+        {"position": 8, "team": "Aston Villa", "played": 21, "won": 9, "draw": 5, "lost": 7, "points": 32},
+        {"position": 9, "team": "Fulham", "played": 21, "won": 8, "draw": 6, "lost": 7, "points": 30},
+        {"position": 10, "team": "Brighton", "played": 21, "won": 7, "draw": 9, "lost": 5, "points": 30},
+    ],
+    "PD": [
+        {"position": 1, "team": "Barcelona", "played": 20, "won": 14, "draw": 4, "lost": 2, "points": 46},
+        {"position": 2, "team": "Real Madrid", "played": 20, "won": 13, "draw": 4, "lost": 3, "points": 43},
+        {"position": 3, "team": "Atletico Madrid", "played": 20, "won": 12, "draw": 5, "lost": 3, "points": 41},
+        {"position": 4, "team": "Athletic Bilbao", "played": 20, "won": 10, "draw": 7, "lost": 3, "points": 37},
+        {"position": 5, "team": "Villarreal", "played": 20, "won": 10, "draw": 4, "lost": 6, "points": 34},
+    ],
+    "BL1": [
+        {"position": 1, "team": "Bayern Munich", "played": 18, "won": 12, "draw": 4, "lost": 2, "points": 40},
+        {"position": 2, "team": "Bayer Leverkusen", "played": 18, "won": 11, "draw": 5, "lost": 2, "points": 38},
+        {"position": 3, "team": "Eintracht Frankfurt", "played": 18, "won": 9, "draw": 6, "lost": 3, "points": 33},
+        {"position": 4, "team": "RB Leipzig", "played": 18, "won": 9, "draw": 4, "lost": 5, "points": 31},
+        {"position": 5, "team": "Borussia Dortmund", "played": 18, "won": 8, "draw": 6, "lost": 4, "points": 30},
+    ],
+    "SA": [
+        {"position": 1, "team": "Napoli", "played": 20, "won": 14, "draw": 3, "lost": 3, "points": 45},
+        {"position": 2, "team": "Inter Milan", "played": 20, "won": 13, "draw": 4, "lost": 3, "points": 43},
+        {"position": 3, "team": "Atalanta", "played": 20, "won": 12, "draw": 3, "lost": 5, "points": 39},
+        {"position": 4, "team": "Lazio", "played": 20, "won": 11, "draw": 5, "lost": 4, "points": 38},
+        {"position": 5, "team": "Juventus", "played": 20, "won": 9, "draw": 9, "lost": 2, "points": 36},
+    ],
+    "FL1": [
+        {"position": 1, "team": "PSG", "played": 18, "won": 14, "draw": 2, "lost": 2, "points": 44},
+        {"position": 2, "team": "Monaco", "played": 18, "won": 11, "draw": 5, "lost": 2, "points": 38},
+        {"position": 3, "team": "Marseille", "played": 18, "won": 10, "draw": 4, "lost": 4, "points": 34},
+        {"position": 4, "team": "Lille", "played": 18, "won": 9, "draw": 5, "lost": 4, "points": 32},
+        {"position": 5, "team": "Lyon", "played": 18, "won": 8, "draw": 5, "lost": 5, "points": 29},
+    ],
+    "CL": [
+        {"position": 1, "team": "Liverpool", "played": 7, "won": 7, "draw": 0, "lost": 0, "points": 21},
+        {"position": 2, "team": "Barcelona", "played": 7, "won": 6, "draw": 0, "lost": 1, "points": 18},
+        {"position": 3, "team": "Arsenal", "played": 7, "won": 5, "draw": 1, "lost": 1, "points": 16},
+        {"position": 4, "team": "Inter Milan", "played": 7, "won": 5, "draw": 1, "lost": 1, "points": 16},
+        {"position": 5, "team": "Atletico Madrid", "played": 7, "won": 5, "draw": 0, "lost": 2, "points": 15},
+    ],
+}
+
+@api_router.get("/football/matches")
+async def get_football_matches(league: str = "PL"):
+    """Get football matches for a league"""
+    # Try to fetch from API first
+    if FOOTBALL_API_KEY:
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                headers = {"X-Auth-Token": FOOTBALL_API_KEY}
+                response = await client.get(
+                    f"{FOOTBALL_API_BASE}/competitions/{league}/matches?status=SCHEDULED,LIVE,IN_PLAY,FINISHED&limit=10",
+                    headers=headers
+                )
+                if response.status_code == 200:
+                    data = response.json()
+                    matches = []
+                    for match in data.get("matches", [])[:10]:
+                        matches.append({
+                            "homeTeam": match["homeTeam"]["shortName"] or match["homeTeam"]["name"],
+                            "awayTeam": match["awayTeam"]["shortName"] or match["awayTeam"]["name"],
+                            "homeScore": match["score"]["fullTime"]["home"],
+                            "awayScore": match["score"]["fullTime"]["away"],
+                            "status": match["status"],
+                            "date": match["utcDate"][:10],
+                            "time": match["utcDate"][11:16] if match["status"] == "SCHEDULED" else "FT" if match["status"] == "FINISHED" else "LIVE",
+                            "minute": match.get("minute")
+                        })
+                    return {"matches": matches, "league": LEAGUE_CODES.get(league, league)}
+        except Exception as e:
+            logging.error(f"Football API error: {e}")
+    
+    # Fallback to sample data
+    return {"matches": SAMPLE_MATCHES.get(league, []), "league": LEAGUE_CODES.get(league, league)}
+
+@api_router.get("/football/standings")
+async def get_football_standings(league: str = "PL"):
+    """Get league standings"""
+    # Try to fetch from API first
+    if FOOTBALL_API_KEY:
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                headers = {"X-Auth-Token": FOOTBALL_API_KEY}
+                response = await client.get(
+                    f"{FOOTBALL_API_BASE}/competitions/{league}/standings",
+                    headers=headers
+                )
+                if response.status_code == 200:
+                    data = response.json()
+                    standings = []
+                    for standing in data.get("standings", [{}])[0].get("table", [])[:10]:
+                        standings.append({
+                            "position": standing["position"],
+                            "team": standing["team"]["shortName"] or standing["team"]["name"],
+                            "played": standing["playedGames"],
+                            "won": standing["won"],
+                            "draw": standing["draw"],
+                            "lost": standing["lost"],
+                            "points": standing["points"]
+                        })
+                    return {"standings": standings, "league": LEAGUE_CODES.get(league, league)}
+        except Exception as e:
+            logging.error(f"Football standings API error: {e}")
+    
+    # Fallback to sample data
+    return {"standings": SAMPLE_STANDINGS.get(league, []), "league": LEAGUE_CODES.get(league, league)}
+
 # Include the router in the main app
 app.include_router(api_router)
 
