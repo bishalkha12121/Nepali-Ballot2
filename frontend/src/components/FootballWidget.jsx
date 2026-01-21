@@ -257,8 +257,19 @@ const FootballWidget = () => {
       )}
 
       {lastUpdated && (
-        <p className="text-xs text-gray-500 mt-4 text-right flex items-center justify-end gap-1">
-          <Clock size={12} /> Updated: {lastUpdated.toLocaleTimeString()}
+        <div className="flex items-center justify-between mt-4 text-xs text-gray-500">
+          <span className={`px-2 py-1 rounded ${dataSource === "live" ? "bg-congress-green/20 text-congress-green" : "bg-white/10 text-gray-400"}`}>
+            {dataSource === "live" ? "🔴 Live Data" : "📊 Sample Data"}
+          </span>
+          <span className="flex items-center gap-1">
+            <Clock size={12} /> Updated: {lastUpdated.toLocaleTimeString()}
+          </span>
+        </div>
+      )}
+      
+      {dataSource === "sample" && (
+        <p className="text-xs text-gray-600 mt-2 text-center italic">
+          Showing representative data. Add API_FOOTBALL_KEY for live scores from api-football.com
         </p>
       )}
     </div>
