@@ -17,7 +17,6 @@ import {
 import { Check, Vote, Lock, Loader2, Sparkles, Shield, CheckCircle2, Star, Zap } from "lucide-react";
 import { getPartyIcon } from "../components/PartyIcons";
 import { NepalPrideSection } from "../components/NepalMap";
-import FootballWidget from "../components/FootballWidget";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
