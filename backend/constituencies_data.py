@@ -305,3 +305,6 @@ CONSTITUENCY_CANDIDATES = [
         ]
     }
 ]
+
+# Combine sample candidates with real election data
+CONSTITUENCY_CANDIDATES = CONSTITUENCY_CANDIDATES + REAL_CANDIDATES
