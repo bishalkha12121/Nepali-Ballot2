@@ -88,7 +88,7 @@ CANDIDATES_DATA = [
         "party_symbol": "Bell",
         "party_color": "#48CAE4",
         "party_flag_url": "/flags/rsp-logo.svg",
-        "image_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
+        "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Balen_Shah.jpg/220px-Balen_Shah.jpg",
         "bio": "Engineer, rapper, and the Mayor of Kathmandu Metropolitan City since 2022. Known for his anti-corruption stance and urban development initiatives.",
         "slogan": "Build Nepal, Build Future"
     },
@@ -99,7 +99,7 @@ CANDIDATES_DATA = [
         "party_symbol": "Sun",
         "party_color": "#EF233C",
         "party_flag_url": "/flags/cpn-uml.svg",
-        "image_url": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
+        "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/K.P._Sharma_Oli.jpg/220px-K.P._Sharma_Oli.jpg",
         "bio": "Chairman of CPN-UML and former Prime Minister of Nepal. A veteran communist leader with decades of political experience.",
         "slogan": "Prosperous Nepal, Happy Nepali"
     },
@@ -110,7 +110,7 @@ CANDIDATES_DATA = [
         "party_symbol": "TreeDeciduous",
         "party_color": "#2A9D8F",
         "party_flag_url": "/flags/nepali-congress.svg",
-        "image_url": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=face",
+        "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Sher_Bahadur_Deuba_2021.jpg/220px-Sher_Bahadur_Deuba_2021.jpg",
         "bio": "President of Nepali Congress and five-time Prime Minister. A key figure in Nepal's democratic movement and constitutional development.",
         "slogan": "Democracy for All"
     },
@@ -121,7 +121,7 @@ CANDIDATES_DATA = [
         "party_symbol": "Hammer",
         "party_color": "#B91C1C",
         "party_flag_url": "/flags/cpn-maoist.svg",
-        "image_url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop&crop=face",
+        "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Pushpa_Kamal_Dahal.jpg/220px-Pushpa_Kamal_Dahal.jpg",
         "bio": "Chairman of CPN-Maoist Centre and current Prime Minister. Former guerrilla leader who led the Maoist insurgency and joined mainstream politics.",
         "slogan": "People's Power, People's Government"
     },
@@ -132,8 +132,8 @@ CANDIDATES_DATA = [
         "party_symbol": "Bell",
         "party_color": "#48CAE4",
         "party_flag_url": "/flags/rsp-logo.svg",
-        "image_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face",
-        "bio": "Founder of Rastriya Swatantra Party and former journalist. Known for his investigative journalism show 'Sidha Kura Janata Sanga'.",
+        "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Rabi_Lamichhane.jpg/220px-Rabi_Lamichhane.jpg",
+        "bio": "Founder of Rastriya Swatantra Party and former journalist. Known for his investigative journalism show 'Sidha Kura Janata Sanga'. Current Home Minister.",
         "slogan": "New Politics, New Nepal"
     }
 ]
