@@ -111,6 +111,7 @@ const FootballWidget = () => {
   const [loading, setLoading] = useState(true);
   const [activeLeague, setActiveLeague] = useState("PL");
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [dataSource, setDataSource] = useState("sample");
 
   useEffect(() => {
     fetchFootballData();
@@ -127,6 +128,7 @@ const FootballWidget = () => {
       ]);
       setMatches(matchesRes.data.matches || []);
       setStandings(standingsRes.data.standings || []);
+      setDataSource(matchesRes.data.source || "sample");
       setLastUpdated(new Date());
     } catch (error) {
       console.error("Failed to fetch football data:", error);
