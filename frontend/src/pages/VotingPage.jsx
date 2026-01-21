@@ -375,6 +375,16 @@ const VotingPage = () => {
             <AdBanner type="rectangle" id="vote-sidebar-2" />
           </div>
         </div>
+
+        {/* Nepal Pride Section */}
+        <div className="mt-16">
+          <NepalPrideSection />
+        </div>
+
+        {/* Football Live Scores */}
+        <div className="mt-12">
+          <FootballWidget />
+        </div>
       </div>
 
       <Footer />
