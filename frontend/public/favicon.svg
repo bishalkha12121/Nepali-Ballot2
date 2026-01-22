@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Background circle with Nepal red -->
+  <circle cx="32" cy="32" r="30" fill="#D90429"/>
+  <!-- Ballot box icon in white -->
+  <rect x="18" y="24" width="28" height="22" rx="2" fill="#FFFFFF"/>
+  <!-- Ballot slot -->
+  <rect x="24" y="20" width="16" height="4" rx="1" fill="#FFFFFF"/>
+  <rect x="26" y="22" width="12" height="2" fill="#D90429"/>
+  <!-- Vote checkmark -->
+  <path d="M24 35 L30 41 L40 29" stroke="#D90429" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Blue border accent (Nepal flag blue) -->
+  <circle cx="32" cy="32" r="30" fill="none" stroke="#003893" stroke-width="2"/>
+</svg>
