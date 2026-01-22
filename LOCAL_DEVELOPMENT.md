@@ -99,9 +99,42 @@ The frontend will open at **http://localhost:3000**
 - Verify backend is running and accessible
 
 ### Wrong Port (5173 instead of 3000)
-- You might be running Vite instead of CRACO
-- Delete any `vite.config.js` if present
-- Use `yarn start` not `npm run dev`
+Port 5173 is Vite's default port. This project uses Create React App (CRACO) which runs on port 3000.
+
+**Troubleshooting steps:**
+1. Kill any existing processes: 
+   - Windows: `taskkill /F /IM node.exe` or close all terminal windows
+   - Mac/Linux: `pkill -f node` or `killall node`
+
+2. Check if you have a global Vite installation:
+   ```bash
+   npm list -g vite
+   # If vite is installed globally, uninstall it:
+   npm uninstall -g vite
+   ```
+
+3. Make sure you're in the `frontend` folder:
+   ```bash
+   cd frontend
+   pwd  # Should show .../frontend
+   ```
+
+4. Delete node_modules and reinstall:
+   ```bash
+   rm -rf node_modules
+   yarn install
+   ```
+
+5. Run the correct command:
+   ```bash
+   yarn start
+   # OR
+   yarn dev
+   ```
+
+6. Check what's running on ports:
+   - Windows: `netstat -ano | findstr :5173`
+   - Mac/Linux: `lsof -i :5173`
 
 ### Module Not Found Errors
 - Run `yarn install` to install all dependencies
