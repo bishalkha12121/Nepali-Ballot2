@@ -167,9 +167,12 @@ const VotingPage = () => {
   const fetchCandidates = async () => {
     try {
       const response = await axios.get(`${API}/candidates`);
-      setCandidates(response.data);
+      // Ensure we always set an array
+      setCandidates(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
+      console.error("Failed to load candidates:", error);
       toast.error("Failed to load candidates");
+      setCandidates([]); // Ensure array on error
     } finally {
       setLoading(false);
     }
