@@ -6,12 +6,15 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Optional
+from typing import List, Optional, Dict, Any, Tuple
 import uuid
 from datetime import datetime, timezone
 import httpx
 import xml.etree.ElementTree as ET
 import asyncio
+import time
+from html.parser import HTMLParser
+import re
 
 ROOT_DIR = Path(__file__).parent
 
@@ -23,8 +26,19 @@ if env_file.exists():
 # MongoDB connection - use environment variables (Railway sets these directly)
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 db_name = os.environ.get('DB_NAME', 'nepali_ballot')
-client = AsyncIOMotorClient(mongo_url)
+# Keep connection timeouts short so UI doesn't hang when Mongo is down
+client = AsyncIOMotorClient(
+    mongo_url,
+    serverSelectionTimeoutMS=2000,
+    connectTimeoutMS=2000,
+)
 db = client[db_name]
+
+# In-memory vote fallback (used when DB is unavailable)
+IN_MEMORY_VOTES: Dict[str, Dict[str, Any]] = {
+    "by_voter": {},  # voter_token -> candidate_id
+    "counts": {},    # candidate_id -> count
+}
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -54,6 +68,9 @@ class CandidateCreate(BaseModel):
     image_url: str
     bio: str
     slogan: str
+
+class WikiBatchRequest(BaseModel):
+    queries: List[str]
 
 class Vote(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -283,21 +300,33 @@ async def refresh_candidates():
     await db.candidates.insert_many(CANDIDATES_DATA)
     return {"message": "Candidates refreshed", "count": len(CANDIDATES_DATA)}
 
+async def _get_candidates_safe() -> List[Dict[str, Any]]:
+    """Return candidates from DB, fall back to static data if DB is unavailable."""
+    try:
+        count = await db.candidates.count_documents({})
+        if count == 0:
+            await db.candidates.insert_many(CANDIDATES_DATA)
+        candidates = await db.candidates.find({}, {"_id": 0}).to_list(100)
+        return candidates or CANDIDATES_DATA
+    except Exception as exc:
+        logger.warning("Candidates DB unavailable, using fallback data", exc_info=exc)
+        return CANDIDATES_DATA
+
 @api_router.get("/candidates", response_model=List[Candidate])
 async def get_candidates():
     """Get all candidates"""
-    # Check if candidates exist in DB, if not seed them
-    count = await db.candidates.count_documents({})
-    if count == 0:
-        await db.candidates.insert_many(CANDIDATES_DATA)
-    
-    candidates = await db.candidates.find({}, {"_id": 0}).to_list(100)
-    return candidates
+    return await _get_candidates_safe()
 
 @api_router.get("/candidates/{candidate_id}", response_model=Candidate)
 async def get_candidate(candidate_id: str):
     """Get single candidate by ID"""
-    candidate = await db.candidates.find_one({"id": candidate_id}, {"_id": 0})
+    try:
+        candidate = await db.candidates.find_one({"id": candidate_id}, {"_id": 0})
+    except Exception as exc:
+        logger.warning("Candidates DB unavailable, using fallback data", exc_info=exc)
+        candidate = None
+    if not candidate:
+        candidate = next((c for c in CANDIDATES_DATA if c.get("id") == candidate_id), None)
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
     return candidate
@@ -305,50 +334,62 @@ async def get_candidate(candidate_id: str):
 @api_router.post("/vote")
 async def cast_vote(vote: VoteCreate):
     """Cast a vote (anonymous, one vote per browser token)"""
-    # Check if voter already voted
-    existing_vote = await db.votes.find_one({"voter_token": vote.voter_token})
-    if existing_vote:
+    # Try DB-backed voting first
+    try:
+        existing_vote = await db.votes.find_one({"voter_token": vote.voter_token})
+        if existing_vote:
+            raise HTTPException(status_code=400, detail="You have already voted in this election")
+
+        candidate = await db.candidates.find_one({"id": vote.candidate_id})
+        if not candidate:
+            raise HTTPException(status_code=404, detail="Candidate not found")
+
+        vote_obj = Vote(
+            candidate_id=vote.candidate_id,
+            voter_token=vote.voter_token
+        )
+        doc = vote_obj.model_dump()
+        doc['timestamp'] = doc['timestamp'].isoformat()
+
+        await db.votes.insert_one(doc)
+        return {"success": True, "message": "Vote cast successfully!"}
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.warning("Votes DB unavailable, using in-memory fallback", exc_info=exc)
+
+    # In-memory fallback
+    if IN_MEMORY_VOTES["by_voter"].get(vote.voter_token):
         raise HTTPException(status_code=400, detail="You have already voted in this election")
-    
-    # Check if candidate exists
-    candidate = await db.candidates.find_one({"id": vote.candidate_id})
-    if not candidate:
-        raise HTTPException(status_code=404, detail="Candidate not found")
-    
-    # Create vote
-    vote_obj = Vote(
-        candidate_id=vote.candidate_id,
-        voter_token=vote.voter_token
-    )
-    doc = vote_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    await db.votes.insert_one(doc)
-    
-    return {"success": True, "message": "Vote cast successfully!"}
+
+    IN_MEMORY_VOTES["by_voter"][vote.voter_token] = vote.candidate_id
+    IN_MEMORY_VOTES["counts"][vote.candidate_id] = IN_MEMORY_VOTES["counts"].get(vote.candidate_id, 0) + 1
+
+    return {"success": True, "message": "Vote cast successfully (fallback)"}
 
 @api_router.get("/results")
 async def get_results():
     """Get current election results"""
-    # Ensure candidates are seeded
-    count = await db.candidates.count_documents({})
-    if count == 0:
-        await db.candidates.insert_many(CANDIDATES_DATA)
-    
-    # Get all candidates
-    candidates = await db.candidates.find({}, {"_id": 0}).to_list(100)
-    
-    # Get vote counts using aggregation
-    pipeline = [
-        {"$group": {"_id": "$candidate_id", "count": {"$sum": 1}}}
-    ]
-    vote_counts_cursor = db.votes.aggregate(pipeline)
-    vote_counts = {item["_id"]: item["count"] async for item in vote_counts_cursor}
-    
-    # Calculate total votes
+    try:
+        # Ensure candidates are seeded
+        count = await db.candidates.count_documents({})
+        if count == 0:
+            await db.candidates.insert_many(CANDIDATES_DATA)
+
+        candidates = await db.candidates.find({}, {"_id": 0}).to_list(100)
+
+        pipeline = [
+            {"$group": {"_id": "$candidate_id", "count": {"$sum": 1}}}
+        ]
+        vote_counts_cursor = db.votes.aggregate(pipeline)
+        vote_counts = {item["_id"]: item["count"] async for item in vote_counts_cursor}
+    except Exception as exc:
+        logger.warning("Votes DB unavailable, using in-memory results", exc_info=exc)
+        candidates = await _get_candidates_safe()
+        vote_counts = IN_MEMORY_VOTES["counts"].copy()
+
     total_votes = sum(vote_counts.values()) if vote_counts else 0
-    
-    # Build results
+
     results = []
     for candidate in candidates:
         vote_count = vote_counts.get(candidate["id"], 0)
@@ -375,7 +416,12 @@ async def get_results():
 @api_router.get("/check-vote/{voter_token}")
 async def check_vote(voter_token: str):
     """Check if a voter token has already voted"""
-    existing_vote = await db.votes.find_one({"voter_token": voter_token}, {"_id": 0})
+    try:
+        existing_vote = await db.votes.find_one({"voter_token": voter_token}, {"_id": 0})
+    except Exception as exc:
+        logger.warning("Votes DB unavailable, returning not voted", exc_info=exc)
+        candidate_id = IN_MEMORY_VOTES["by_voter"].get(voter_token)
+        return {"has_voted": bool(candidate_id), "candidate_id": candidate_id}
     if existing_vote:
         return {"has_voted": True, "candidate_id": existing_vote.get("candidate_id")}
     return {"has_voted": False, "candidate_id": None}
@@ -400,6 +446,220 @@ async def get_historical_election(election_id: str):
         if election["id"] == election_id:
             return election
     raise HTTPException(status_code=404, detail="Election not found")
+
+#
+# ============== OFFICIAL ELECTION COMMISSION (EC) ENDPOINTS ==============
+#
+
+EC_SOURCES: Dict[str, Dict[str, str]] = {
+    # Top-level landing page (useful for users to verify)
+    "home": {"label": "EC Results Home", "url": "https://result.election.gov.np/ElectionResult.aspx"},
+    # Common result views used for past elections (2074/2079 and related pages on the site)
+    "hor_fptp_detail": {"label": "House of Representatives (FPTP) - Detailed Results", "url": "https://result.election.gov.np/ElectionResultCentral.aspx"},
+    "hor_pr_detail": {"label": "House of Representatives (PR) - Detailed Results", "url": "https://result.election.gov.np/ElectionResultCentralPR.aspx"},
+    "hor_pr_elected": {"label": "House of Representatives (PR) - Elected Candidates", "url": "https://result.election.gov.np/ElectedCandidateListCentralPR.aspx"},
+    "gender_summary": {"label": "Gender-wise Elected Summary", "url": "https://result.election.gov.np/GenderWiseElectedSummary.aspx"},
+    "fptp_party_status": {"label": "FPTP Party Status (Win/Lead)", "url": "https://result.election.gov.np/FPTPWLChartResult.aspx"},
+    "pr_party_votes": {"label": "PR Party Vote Status", "url": "https://result.election.gov.np/PRVoteChartResult.aspx"},
+}
+
+# Simple in-memory cache to avoid hammering EC site
+EC_CACHE: Dict[str, Tuple[float, Dict[str, Any]]] = {}
+EC_CACHE_TTL_SECONDS = 300  # 5 minutes
+
+
+class _HTMLTableParser(HTMLParser):
+    """
+    Minimal HTML table extractor using the stdlib.
+    Collects all <table> contents into a list of tables: [[row1cells], [row2cells], ...]
+    """
+
+    def __init__(self):
+        super().__init__()
+        self._in_table = False
+        self._in_tr = False
+        self._in_cell = False
+        self._cell_text_parts: List[str] = []
+
+        self.tables: List[List[List[str]]] = []
+        self._current_table: List[List[str]] = []
+        self._current_row: List[str] = []
+
+    def handle_starttag(self, tag, attrs):
+        tag = tag.lower()
+        if tag == "table":
+            self._in_table = True
+            self._current_table = []
+        elif self._in_table and tag == "tr":
+            self._in_tr = True
+            self._current_row = []
+        elif self._in_table and self._in_tr and tag in ("td", "th"):
+            self._in_cell = True
+            self._cell_text_parts = []
+
+    def handle_endtag(self, tag):
+        tag = tag.lower()
+        if tag == "table" and self._in_table:
+            self._in_table = False
+            if any(any(cell.strip() for cell in row) for row in self._current_table):
+                self.tables.append(self._current_table)
+            self._current_table = []
+        elif tag == "tr" and self._in_tr:
+            self._in_tr = False
+            if self._current_row and any(c.strip() for c in self._current_row):
+                self._current_table.append(self._current_row)
+            self._current_row = []
+        elif tag in ("td", "th") and self._in_cell:
+            self._in_cell = False
+            text = " ".join(self._cell_text_parts).strip()
+            # Normalize whitespace
+            text = " ".join(text.split())
+            self._current_row.append(text)
+            self._cell_text_parts = []
+
+    def handle_data(self, data):
+        if self._in_cell and data:
+            self._cell_text_parts.append(data)
+
+
+class _HTMLTextExtractor(HTMLParser):
+    """Extract visible text from HTML (fallback when structured tables aren't available)."""
+
+    def __init__(self):
+        super().__init__()
+        self._skip_depth = 0  # script/style/head/noscript
+        self.parts: List[str] = []
+
+    def handle_starttag(self, tag, attrs):
+        tag = tag.lower()
+        if tag in ("script", "style", "head", "noscript"):
+            self._skip_depth += 1
+
+    def handle_endtag(self, tag):
+        tag = tag.lower()
+        if tag in ("script", "style", "head", "noscript") and self._skip_depth > 0:
+            self._skip_depth -= 1
+
+    def handle_data(self, data):
+        if self._skip_depth > 0:
+            return
+        if not data:
+            return
+        txt = " ".join(data.split())
+        if txt:
+            self.parts.append(txt)
+
+
+def _tables_to_structured(tables: List[List[List[str]]]) -> List[Dict[str, Any]]:
+    structured: List[Dict[str, Any]] = []
+    for t in tables:
+        if not t:
+            continue
+        # Heuristic: treat first row as headers if it has more than one cell and looks header-like
+        headers = t[0]
+        rows = t[1:] if len(t) > 1 else []
+        structured.append({"headers": headers, "rows": rows})
+    return structured
+
+
+async def _fetch_ec_html(url: str) -> str:
+    # Use a browser-like UA to reduce blocks
+    headers = {"User-Agent": "Mozilla/5.0 (NepaliBallot; +https://github.com/)"}  # harmless UA
+    timeout = httpx.Timeout(30.0)
+    async with httpx.AsyncClient(timeout=timeout, follow_redirects=True, headers=headers) as client:
+        # Basic retry for transient TLS/handshake slowness
+        for attempt in (1, 2):
+            try:
+                resp = await client.get(url)
+                resp.raise_for_status()
+                content_type = (resp.headers.get("content-type") or "").lower()
+                charset = "utf-8"
+                if "charset=" in content_type:
+                    charset = content_type.split("charset=", 1)[1].split(";", 1)[0].strip() or "utf-8"
+                try:
+                    return resp.content.decode(charset, errors="replace")
+                except Exception:
+                    # Fallback for odd/misleading charset headers
+                    return resp.content.decode("utf-8", errors="replace")
+            except Exception:
+                if attempt == 2:
+                    raise
+                await asyncio.sleep(0.4)
+    raise RuntimeError("Unreachable")
+
+
+def _extract_tables(html: str) -> List[Dict[str, Any]]:
+    parser = _HTMLTableParser()
+    parser.feed(html)
+    return _tables_to_structured(parser.tables)
+
+
+def _extract_text_lines(html: str, max_lines: int = 120) -> List[str]:
+    extractor = _HTMLTextExtractor()
+    extractor.feed(html)
+    lines: List[str] = []
+    seen = set()
+    for part in extractor.parts:
+        if part in seen:
+            continue
+        seen.add(part)
+        lines.append(part)
+        if len(lines) >= max_lines:
+            break
+    return lines
+
+
+@api_router.get("/ec/sources")
+async def ec_sources():
+    """List supported Election Commission result views."""
+    return {
+        "source": "Election Commission of Nepal (ERIS)",
+        "sources": [{"id": k, "label": v["label"], "url": v["url"]} for k, v in EC_SOURCES.items()],
+        "base_url": "https://result.election.gov.np/",
+    }
+
+
+@api_router.get("/ec/tables/{source_id}")
+async def ec_tables(source_id: str, refresh: bool = False):
+    """
+    Fetch and parse tables from an Election Commission results page.
+    Returns normalized tables for frontend display.
+    """
+    if source_id not in EC_SOURCES:
+        raise HTTPException(status_code=404, detail="Unknown EC source_id")
+
+    now = time.time()
+    if not refresh:
+        cached = EC_CACHE.get(source_id)
+        if cached:
+            ts, data = cached
+            if now - ts < EC_CACHE_TTL_SECONDS:
+                return data
+
+    url = EC_SOURCES[source_id]["url"]
+    try:
+        html = await _fetch_ec_html(url)
+    except Exception as e:
+        logger.exception("EC fetch failed: %s", e)
+        raise HTTPException(status_code=502, detail="Failed to fetch official EC data")
+
+    tables = _extract_tables(html)
+    content_type = "tables" if tables else "text"
+    text_lines: List[str] = _extract_text_lines(html) if not tables else []
+
+    payload = {
+        "source_id": source_id,
+        "source_label": EC_SOURCES[source_id]["label"],
+        "source_url": url,
+        "content_type": content_type,
+        "tables": tables,
+        "text_lines": text_lines,
+        "fetched_at": datetime.now(timezone.utc).isoformat(),
+        "cache_ttl_seconds": EC_CACHE_TTL_SECONDS,
+    }
+    EC_CACHE[source_id] = (now, payload)
+    return payload
+
 
 @api_router.get("/stats")
 async def get_stats():
@@ -603,6 +863,156 @@ async def get_news():
 # Import constituency data from separate file
 from constituencies_data import ALL_CONSTITUENCIES, CONSTITUENCY_CANDIDATES, FEDERAL_CONSTITUENCIES
 
+# Remote constituency source (legacy backend)
+REMOTE_BACKEND_URL = os.environ.get(
+    "REMOTE_BACKEND_URL",
+    "https://nepali-ballot2-production.up.railway.app"
+).rstrip("/")
+
+CONSTITUENCY_CACHE: Dict[str, Any] = {"timestamp": 0, "data": None}
+CONSTITUENCY_CACHE_TTL_SECONDS = 60 * 10
+
+WIKI_CACHE: Dict[str, Tuple[float, Dict[str, Any]]] = {}
+WIKI_CACHE_TTL_SECONDS = 7 * 24 * 60 * 60
+WIKI_SEMAPHORE = asyncio.Semaphore(5)
+WIKI_FALLBACK_IMAGE_URL = (
+    "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
+)
+
+def _normalize_name(value: str) -> str:
+    return re.sub(r"\s+", " ", value or "").strip().lower()
+
+def _truncate_text(value: Optional[str], max_len: int = 280) -> Optional[str]:
+    if not value:
+        return None
+    cleaned = " ".join(str(value).split())
+    if len(cleaned) <= max_len:
+        return cleaned
+    return f"{cleaned[: max_len - 1].rstrip()}…"
+
+def _merge_election_history(candidate: Dict[str, Any], fallback: Dict[str, Any]) -> Dict[str, Any]:
+    history = candidate.get("election_history") or fallback.get("election_history") or []
+    wins = sum(1 for h in history if str(h.get("result", "")).lower() == "won")
+    candidate["election_history"] = history
+    candidate["wins"] = candidate.get("wins", wins)
+    candidate["elections_contested"] = candidate.get("elections_contested", len(history))
+    return candidate
+
+async def _fetch_remote_json(path: str) -> Any:
+    url = f"{REMOTE_BACKEND_URL}{path}"
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        resp = await client.get(url)
+        resp.raise_for_status()
+        return resp.json()
+
+async def _get_remote_constituency_data(refresh: bool = False) -> Dict[str, Any]:
+    now = time.time()
+    if (
+        CONSTITUENCY_CACHE["data"]
+        and not refresh
+        and now - CONSTITUENCY_CACHE["timestamp"] < CONSTITUENCY_CACHE_TTL_SECONDS
+    ):
+        return CONSTITUENCY_CACHE["data"]
+    try:
+        constituencies = await _fetch_remote_json("/api/constituencies")
+        candidates = await _fetch_remote_json("/api/constituency-candidates")
+        data = {"constituencies": constituencies, "candidates": candidates, "source": "remote-backend"}
+        CONSTITUENCY_CACHE["data"] = data
+        CONSTITUENCY_CACHE["timestamp"] = now
+        return data
+    except Exception as exc:
+        logger.warning("Remote constituency fetch failed, using local data", exc_info=exc)
+        data = {
+            "constituencies": ALL_CONSTITUENCIES,
+            "candidates": CONSTITUENCY_CANDIDATES,
+            "source": "local-fallback",
+        }
+        CONSTITUENCY_CACHE["data"] = data
+        CONSTITUENCY_CACHE["timestamp"] = now
+        return data
+
+async def _get_wiki_summary(query: str) -> Dict[str, Any]:
+    now = time.time()
+    cache_key = _normalize_name(query)
+    cached = WIKI_CACHE.get(cache_key)
+    if cached and now - cached[0] < WIKI_CACHE_TTL_SECONDS:
+        return cached[1]
+
+    async with WIKI_SEMAPHORE:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            try:
+                search_url = "https://en.wikipedia.org/w/api.php"
+                search_params = {
+                    "action": "opensearch",
+                    "search": query,
+                    "limit": 1,
+                    "namespace": 0,
+                    "format": "json",
+                }
+                search_resp = await client.get(search_url, params=search_params)
+                search_resp.raise_for_status()
+                search_data = search_resp.json()
+                title = search_data[1][0] if len(search_data) > 1 and search_data[1] else None
+
+                if not title:
+                    data = {
+                        "query": query,
+                        "title": None,
+                        "page_url": None,
+                        "image_url": WIKI_FALLBACK_IMAGE_URL,
+                        "summary": None,
+                        "description": None,
+                    }
+                    WIKI_CACHE[cache_key] = (now, data)
+                    return data
+
+                summary_url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{title}"
+                summary_resp = await client.get(summary_url)
+                summary_resp.raise_for_status()
+                summary = summary_resp.json()
+                image_url = None
+                if isinstance(summary.get("originalimage"), dict):
+                    image_url = summary["originalimage"].get("source")
+                if not image_url and isinstance(summary.get("thumbnail"), dict):
+                    image_url = summary["thumbnail"].get("source")
+                if not image_url:
+                    image_url = WIKI_FALLBACK_IMAGE_URL
+
+                data = {
+                    "query": query,
+                    "title": summary.get("title"),
+                    "page_url": summary.get("content_urls", {}).get("desktop", {}).get("page"),
+                    "image_url": image_url,
+                    "summary": _truncate_text(summary.get("extract")),
+                    "description": _truncate_text(summary.get("description"), max_len=140),
+                }
+                WIKI_CACHE[cache_key] = (now, data)
+                return data
+            except Exception as exc:
+                logger.warning("Wikipedia lookup failed for %s", query, exc_info=exc)
+                data = {
+                    "query": query,
+                    "title": None,
+                    "page_url": None,
+                    "image_url": WIKI_FALLBACK_IMAGE_URL,
+                    "summary": None,
+                    "description": None,
+                }
+                WIKI_CACHE[cache_key] = (now, data)
+                return data
+
+def _build_candidate_merits(candidate: Dict[str, Any], wiki_summary: Optional[str]) -> List[str]:
+    merits: List[str] = []
+    wins = candidate.get("wins") or 0
+    elections = candidate.get("elections_contested") or 0
+    if wins:
+        merits.append(f"Won {wins} election{'s' if wins != 1 else ''}")
+    if elections:
+        merits.append(f"Contested {elections} election{'s' if elections != 1 else ''}")
+    if wiki_summary:
+        merits.append(wiki_summary)
+    return merits
+
 @api_router.get("/constituencies")
 async def get_constituencies():
     """Get all constituencies - 165 federal + provincial + local"""
@@ -636,6 +1046,102 @@ async def get_constituency(constituency_id: str):
             candidates = [cand for cand in CONSTITUENCY_CANDIDATES if cand.get("constituency_id") == constituency_id]
             return {**c, "candidates": candidates}
     raise HTTPException(status_code=404, detail="Constituency not found")
+
+@api_router.get("/constituencies/{constituency_id}/candidates")
+async def get_constituency_candidates_enriched(constituency_id: str, refresh: bool = False):
+    """Get constituency candidates with Wikipedia images and election history."""
+    remote_data = await _get_remote_constituency_data(refresh=refresh)
+    remote_constituencies = remote_data.get("constituencies") or []
+    remote_candidates = remote_data.get("candidates") or []
+
+    constituency = next(
+        (c for c in remote_constituencies if c.get("id") == constituency_id), None
+    )
+    if not constituency:
+        constituency = next((c for c in ALL_CONSTITUENCIES if c.get("id") == constituency_id), None)
+
+    if not constituency:
+        raise HTTPException(status_code=404, detail="Constituency not found")
+
+    name_match = _normalize_name(constituency.get("name", ""))
+    candidates = [
+        c for c in remote_candidates
+        if c.get("constituency_id") == constituency_id
+        or _normalize_name(c.get("constituency", "")) == name_match
+    ]
+
+    if not candidates:
+        candidates = [
+            c for c in CONSTITUENCY_CANDIDATES
+            if c.get("constituency_id") == constituency_id
+            or _normalize_name(c.get("constituency", "")) == name_match
+        ]
+
+    fallback_map = {
+        _normalize_name(c.get("name", "")): c for c in CONSTITUENCY_CANDIDATES
+    }
+
+    enriched = []
+    for candidate in candidates:
+        normalized = _normalize_name(candidate.get("name", ""))
+        fallback = fallback_map.get(normalized, {})
+        merged = {**fallback, **candidate}
+        merged = _merge_election_history(merged, fallback)
+
+        wiki = await _get_wiki_summary(candidate.get("name", "")) if candidate.get("name") else {}
+        if wiki.get("image_url") and not merged.get("image_url"):
+            merged["image_url"] = wiki["image_url"]
+        merged["wiki"] = wiki
+        merged["merits"] = _build_candidate_merits(merged, wiki.get("summary"))
+        enriched.append(merged)
+
+    return {
+        "constituency": constituency,
+        "candidates": enriched,
+        "total_candidates": len(enriched),
+        "source": remote_data.get("source", "remote-backend"),
+    }
+
+@api_router.post("/wiki/batch")
+async def wiki_batch_lookup(payload: WikiBatchRequest):
+    """Resolve Wikipedia summaries/images for many queries with caching."""
+    queries = [q.strip() for q in payload.queries if q and q.strip()]
+    if not queries:
+        return {"results": []}
+
+    tasks = [_get_wiki_summary(q) for q in queries]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    output = []
+    for query, result in zip(queries, results):
+        if isinstance(result, Exception):
+            output.append({
+                "query": query,
+                "title": None,
+                "page_url": None,
+                "image_url": WIKI_FALLBACK_IMAGE_URL,
+            })
+        else:
+            output.append(result)
+
+    return {"results": output}
+
+@api_router.get("/constituencies/{constituency_id}/summary")
+async def get_constituency_summary(constituency_id: str, refresh: bool = False):
+    """Get party/independent counts for a constituency."""
+    data = await get_constituency_candidates_enriched(constituency_id, refresh=refresh)
+    counts: Dict[str, int] = {}
+    for candidate in data["candidates"]:
+        party = candidate.get("party") or "Independent"
+        counts[party] = counts.get(party, 0) + 1
+    summary = [{"party": party, "count": count} for party, count in counts.items()]
+    summary.sort(key=lambda x: (-x["count"], x["party"].lower()))
+    return {
+        "constituency": data["constituency"],
+        "total_candidates": data["total_candidates"],
+        "by_party": summary,
+        "source": data["source"],
+    }
 
 @api_router.post("/constituencies")
 async def add_constituency(data: dict):

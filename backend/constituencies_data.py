@@ -9,51 +9,51 @@ def generate_constituencies():
     constituencies = []
     
     # Province data with districts and their seat counts
+    # Updated based on official Election Commission of Nepal constituency map (165 total)
     PROVINCE_DATA = {
         "koshi": {
             "name": "Koshi Province",
-            "seats": 28,
+            "seats": 27,
             "districts": {
-                "Jhapa": 4, "Morang": 6, "Sunsari": 3, "Ilam": 2, "Panchthar": 1,
+                "Jhapa": 5, "Morang": 6, "Sunsari": 4, "Ilam": 2, "Panchthar": 1,
                 "Taplejung": 1, "Sankhuwasabha": 1, "Terhathum": 1, "Dhankuta": 1,
-                "Bhojpur": 1, "Solukhumbu": 1, "Okhaldhunga": 1, "Khotang": 2,
-                "Udayapur": 2, "Saptari": 1
+                "Bhojpur": 1, "Solukhumbu": 1, "Okhaldhunga": 1, "Khotang": 2
             }
         },
         "madhesh": {
             "name": "Madhesh Province",
-            "seats": 32,
+            "seats": 33,
             "districts": {
-                "Saptari": 3, "Siraha": 4, "Dhanusha": 4, "Mahottari": 4,
-                "Sarlahi": 4, "Rautahat": 4, "Bara": 4, "Parsa": 3, "Sunsari": 2
+                "Saptari": 4, "Siraha": 4, "Dhanusha": 4, "Mahottari": 3,
+                "Sarlahi": 4, "Rautahat": 4, "Bara": 4, "Parsa": 4, "Udayapur": 2
             }
         },
         "bagmati": {
             "name": "Bagmati Province",
             "seats": 33,
             "districts": {
-                "Kathmandu": 10, "Lalitpur": 3, "Bhaktapur": 2, "Kavrepalanchok": 3,
-                "Sindhupalchok": 2, "Dolakha": 1, "Ramechhap": 2, "Sindhuli": 2,
+                "Kathmandu": 10, "Lalitpur": 3, "Bhaktapur": 2, "Kavrepalanchok": 2,
+                "Sindhupalchok": 2, "Dolakha": 1, "Ramechhap": 1, "Sindhuli": 2,
                 "Makwanpur": 2, "Chitwan": 3, "Dhading": 2, "Nuwakot": 2,
                 "Rasuwa": 1
             }
         },
         "gandaki": {
             "name": "Gandaki Province",
-            "seats": 18,
+            "seats": 16,
             "districts": {
                 "Kaski": 3, "Tanahun": 2, "Syangja": 2, "Gorkha": 2, "Lamjung": 1,
-                "Manang": 1, "Mustang": 1, "Myagdi": 1, "Baglung": 2, "Parbat": 1,
-                "Nawalpur": 2
+                "Manang": 1, "Mustang": 1, "Myagdi": 1, "Parbat": 1,
+                "Nawalparasi Purba": 2
             }
         },
         "lumbini": {
             "name": "Lumbini Province",
-            "seats": 26,
+            "seats": 27,
             "districts": {
                 "Rupandehi": 5, "Kapilvastu": 3, "Palpa": 2, "Arghakhanchi": 1,
-                "Gulmi": 2, "Nawalparasi West": 2, "Dang": 3, "Banke": 3,
-                "Bardiya": 2, "Pyuthan": 1, "Rolpa": 1, "Rukum East": 1
+                "Gulmi": 2, "Nawalparasi Paschim": 2, "Dang": 3, "Banke": 3,
+                "Bardiya": 2, "Pyuthan": 1, "Rolpa": 1, "Baglung": 2
             }
         },
         "karnali": {
@@ -61,15 +61,15 @@ def generate_constituencies():
             "seats": 12,
             "districts": {
                 "Surkhet": 2, "Dailekh": 2, "Jajarkot": 1, "Dolpa": 1, "Jumla": 1,
-                "Kalikot": 1, "Mugu": 1, "Humla": 1, "Salyan": 1, "Rukum West": 1
+                "Kalikot": 1, "Mugu": 1, "Humla": 1, "Salyan": 1, "Rukum Paschim": 1
             }
         },
         "sudurpashchim": {
             "name": "Sudurpashchim Province",
-            "seats": 16,
+            "seats": 17,
             "districts": {
                 "Kailali": 5, "Kanchanpur": 3, "Dadeldhura": 1, "Baitadi": 2,
-                "Darchula": 1, "Bajhang": 1, "Bajura": 1, "Achham": 2
+                "Darchula": 1, "Bajhang": 1, "Bajura": 1, "Achham": 2, "Doti": 1
             }
         }
     }
